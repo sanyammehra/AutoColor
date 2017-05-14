@@ -5,6 +5,7 @@ import matplotlib.image as mpimg
 import glob
 from data_utils import load_data, augment_data,normalise_train,normalise_test,rgb2gray
 import matplotlib.pyplot as plt
+import tensorflow.contrib.slim as slim
 
 
 

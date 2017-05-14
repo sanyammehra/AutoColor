@@ -35,16 +35,20 @@ def load_data():
 			input_image.append(list(mpimg.imread(filename)))
 		if(i%10000 == 0):
 			print(i)
+		#if(i >500):
+		#	break
+
 		i+=1
 
 	input_image = np.asarray(input_image)
 	gray_data = rgb2gray(input_image)
 	rand_indices = np.arange(input_image.shape[0])
 	np.random.shuffle(rand_indices)
-	X_train = gray_data[rand_indices[0:82000]]
-	X_test = gray_data[rand_indices[82000:]]
-	Y_train = input_image[rand_indices[0:82000]]
-	Y_test = input_image[rand_indices[82000:]]
+	lenn = int(4.0*input_image.shape[0]/5.0)
+	X_train = gray_data[rand_indices[0:lenn]]
+	X_test = gray_data[rand_indices[lenn:]]
+	Y_train = input_image[rand_indices[0:lenn]]
+	Y_test = input_image[rand_indices[lenn:]]
 	return X_train, X_test, Y_train, Y_test
 
 def augment_image(image):
