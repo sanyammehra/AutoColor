@@ -5,6 +5,7 @@ import tensorflow as tf
 import math
 import matplotlib.image as mpimg
 import glob
+import skimage.color as sk
 
 def rgb2gray(rgb):
     return np.dot(rgb[...,:3], [0.299, 0.587, 0.114])
@@ -35,7 +36,7 @@ def load_data():
 			input_image.append(list(mpimg.imread(filename)))
 		if(i%10000 == 0):
 			print(i)
-		if(i >500):
+		if(i >5000):
 			break
 
 		i+=1
@@ -70,6 +71,13 @@ def normalise_test(image,mean_image,std_image):
 	image = (image - mean_image)/std_image
 	return image
 
+
+
+def rgb2lab(rgb):
+	return sk.rgb2lab(rgb)
+
+def lab2rgb(lab):
+	return sk.lab2rgb(lab)
 
 
 '''
