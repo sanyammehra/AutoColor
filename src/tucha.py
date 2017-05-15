@@ -35,7 +35,7 @@ def baselinish(X,Y,is_training):
     #a1 = tf.nn.relu(a1)
     #a1 = tf.contrib.layers.batch_norm(a1,center = True, scale = True, is_training = is_training,scope = 'bn3')
 
-def lrelu(x, leak=0.2, name='lrelu'):
+def lrelu(x, leak=0, name='lrelu'):
     return tf.maximum(leak*x, x)
 
 
@@ -95,7 +95,7 @@ def simpler_model(gray_image,train = False):
   conv16 = lrelu(slim.convolution(conv15, 16, 1, stride=1, scope='conv16', normalizer_fn=slim.batch_norm, activation_fn=tf.identity))
   conv17 = lrelu(slim.convolution(conv16, 8, 1, stride=1, scope='conv17', normalizer_fn=slim.batch_norm, activation_fn=tf.identity))
   if train: conv17 = tf.nn.dropout(conv17, 0.8)
-  conv18 = lrelu(slim.convolution(conv17, 2, 1, stride=1, scope='conv18', normalizer_fn=slim.batch_norm, activation_fn=tf.identity))
+  conv18 = (slim.convolution(conv17, 2, 1, stride=1, scope='conv18', activation_fn=tf.identity))
   if train: conv18 = tf.nn.dropout(conv18, 0.8)
   
   return conv18
