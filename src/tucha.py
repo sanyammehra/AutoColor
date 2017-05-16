@@ -52,10 +52,21 @@ def baselinish(X,Y,is_training):
 def baselinish2(X,is_training):
 
     Y = tf.image.convert_image_dtype(X,tf.float32)
-    inputt = tf.image.rgb_to_hsv(Y)
+    #inputt = tf.image.rgb_to_hsv(Y)
+    #inpp = inputt[:,:,:,0:2]
+    #inp = inputt[:,:,:,2:3]
+
+    conv_mat = tf.constant(np.array([[0.299,0.587,0.114],[-0.14713,-0.2888,0.436],[0.615,-0.514999,-0.10001]]),dtype = tf.float32)
+    inv_conv_mat = tf.constant(np.array([[1,0,1.13983],[1,-0.39465,-0.58060],[1,2.03211,0]]),dtype = tf.float32)
+
+    Y = tf.reshape(Y,[-1,3])
+
+    inputt = tf.matmul(Y,conv_mat)
+    inputt = tf.reshape(inputt,[-1,64,64,3])
+    Y = tf.reshape(Y,[-1,64,64,3])
     inpp = inputt[:,:,:,1:3]
     inp = inputt[:,:,:,0:1]
-    
+
     W_conv = tf.get_variable("Wconv",shape = [7,7,1,32],initializer=tf.contrib.layers.xavier_initializer())
     b_conv = tf.get_variable("bconv",shape = [32])
     a1 = tf.nn.conv2d(inp, W_conv, strides=[1,1,1,1], padding='SAME') + b_conv
@@ -78,13 +89,16 @@ def baselinish2(X,is_training):
     W_conv3 = tf.get_variable("Wconv3",shape = [1,1,64,32],initializer=tf.contrib.layers.xavier_initializer())
     b_conv3 = tf.get_variable("bconv3",shape = [32])
     a1 = tf.nn.conv2d(a1, W_conv3, strides=[1,1,1,1], padding='SAME') + b_conv3
-    a1 = tf.nn.relu(a1)
+    #a1 = tf.nn.relu(a1)
     W_conv4 = tf.get_variable("Wconv4",shape = [1,1,32,2],initializer=tf.contrib.layers.xavier_initializer())
     b_conv4 = tf.get_variable("bconv4",shape = [2])
     a1 = tf.nn.conv2d(a1, W_conv4, strides=[1,1,1,1], padding='SAME') + b_conv4
 
     a3 = tf.concat((inp,a1),axis = 3)
-    a2 = tf.image.hsv_to_rgb(a3)
+    #a2 = tf.image.hsv_to_rgb(a3)
+    a3 = tf.reshape(a3,[-1,3])
+    a2 = tf.matmul(a3,inv_conv_mat)
+    a2 = tf.reshape(a2,[-1,64,64,3])
 
     
     return a1,a2,inpp,Y
@@ -141,8 +155,8 @@ def complex_pokemon_model2(X,train=True):
 
   Y = tf.image.convert_image_dtype(X,tf.float32)
   inputt = tf.image.rgb_to_hsv(Y)
-  inpp = inputt[:,:,:,1:3]
-  inp = inputt[:,:,:,0:1]
+  inpp = inputt[:,:,:,0:2]
+  inp = inputt[:,:,:,2:3]
 
   conv1 = lrelu(slim.convolution(inp, 32, 3, stride=1, scope='conv1', normalizer_fn=slim.batch_norm, activation_fn=tf.identity))
   conv2 = lrelu(slim.convolution(conv1, 32, 3, stride=1, scope='conv2', normalizer_fn=slim.batch_norm, activation_fn=tf.identity))
@@ -165,7 +179,7 @@ def complex_pokemon_model2(X,train=True):
   conv18 = lrelu(slim.convolution(conv17, 2, 1, stride=1, scope='conv18', normalizer_fn=slim.batch_norm, activation_fn=tf.identity))
   #if train: conv18 = tf.nn.dropout(conv18, 0.8)
 
-  a3 = tf.concat((inp,conv18),axis = 3)
+  a3 = tf.concat((conv18,inp),axis = 3)
   a2 = tf.image.hsv_to_rgb(a3)
 
     
