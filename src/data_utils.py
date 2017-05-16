@@ -36,7 +36,7 @@ def load_data():
 			input_image.append(list(mpimg.imread(filename)))
 		if(i%10000 == 0):
 			print(i)
-		if(i >5000):
+		if(i >60):
 			break
 
 		i+=1
