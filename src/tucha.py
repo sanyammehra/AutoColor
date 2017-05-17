@@ -103,6 +103,60 @@ def baselinish2(X,is_training):
     
     return a1,a2,inpp,Y
 
+def baselinish3(X,is_training):
+
+    Y = tf.image.convert_image_dtype(X,tf.float32)
+    #inputt = tf.image.rgb_to_hsv(Y)
+    #inpp = inputt[:,:,:,0:2]
+    #inp = inputt[:,:,:,2:3]
+
+    conv_mat = tf.constant(np.array([[0.299,0.587,0.114],[-0.14713,-0.2888,0.436],[0.615,-0.514999,-0.10001]]),dtype = tf.float32)
+    inv_conv_mat = tf.constant(np.array([[1,0,1.13983],[1,-0.39465,-0.58060],[1,2.03211,0]]),dtype = tf.float32)
+
+    Y = tf.reshape(Y,[-1,3])
+
+    inputt = tf.matmul(Y,conv_mat)
+    inputt = tf.reshape(inputt,[-1,32,32,3])
+    Y = tf.reshape(Y,[-1,32,32,3])
+    inpp = inputt[:,:,:,1:3]
+    inp = inputt[:,:,:,0:1]
+
+    W_conv = tf.get_variable("Wconv",shape = [7,7,1,32],initializer=tf.contrib.layers.xavier_initializer())
+    b_conv = tf.get_variable("bconv",shape = [32])
+    a1 = tf.nn.conv2d(inp, W_conv, strides=[1,1,1,1], padding='SAME') + b_conv
+    a1 = tf.nn.relu(a1)
+    a1 = tf.contrib.layers.batch_norm(a1,center = True, scale = True, is_training = is_training,scope = 'bn1')
+    #a1 = tf.nn.max_pool(a1,ksize = [1,2,2,1],strides = [1,2,2,1],padding = 'VALID')
+
+    W_conv1 = tf.get_variable("Wconv1",shape = [3,3,32,32],initializer=tf.contrib.layers.xavier_initializer())
+    b_conv1 = tf.get_variable("bconv1",shape = [32])
+    a1 = tf.nn.conv2d(a1, W_conv1, strides=[1,1,1,1], padding='SAME') + b_conv1
+    a1 = tf.nn.sigmoid(a1)
+    a1 = tf.contrib.layers.batch_norm(a1,center = True, scale = True, is_training = is_training,scope = 'bn3')
+    
+    W_conv2 = tf.get_variable("Wconv2",shape = [3,3,32,64],initializer=tf.contrib.layers.xavier_initializer())
+    b_conv2 = tf.get_variable("bconv2",shape = [64])
+    a1 = tf.nn.conv2d(a1, W_conv2, strides=[1,1,1,1], padding='SAME') + b_conv2
+    a1 = tf.nn.relu(a1)
+    a1 = tf.contrib.layers.batch_norm(a1,center = True, scale = True, is_training = is_training,scope = 'bn2')
+    
+    W_conv3 = tf.get_variable("Wconv3",shape = [1,1,64,32],initializer=tf.contrib.layers.xavier_initializer())
+    b_conv3 = tf.get_variable("bconv3",shape = [32])
+    a1 = tf.nn.conv2d(a1, W_conv3, strides=[1,1,1,1], padding='SAME') + b_conv3
+    #a1 = tf.nn.relu(a1)
+    W_conv4 = tf.get_variable("Wconv4",shape = [1,1,32,2],initializer=tf.contrib.layers.xavier_initializer())
+    b_conv4 = tf.get_variable("bconv4",shape = [2])
+    a1 = tf.nn.conv2d(a1, W_conv4, strides=[1,1,1,1], padding='SAME') + b_conv4
+
+    a3 = tf.concat((inp,a1),axis = 3)
+    #a2 = tf.image.hsv_to_rgb(a3)
+    a3 = tf.reshape(a3,[-1,3])
+    a2 = tf.matmul(a3,inv_conv_mat)
+    a2 = tf.reshape(a2,[-1,32,32,3])
+
+    
+    return a1,a2,inpp,Y
+
 def lrelu(x, leak=0., name='lrelu'):
     return tf.maximum(leak*x, x)
 
