@@ -26,11 +26,33 @@ def rgb2gray(rgb):
 def rgb2gray(rgb):
     a = np.dot(rgb[...,:3], [0.299, 0.587, 0.114])
     return a[:,:,:,np.newaxis]
-
+def load_labels(file_name='~/tiny-imagenet-200/words.txt', label_map={}):
+    file1 = open(file_name)
+    file2 = open('~/tiny-imagenet-200/wnids.txt')
+    subset = file2.readlines()
+    tiny = []
+    for val in subset:
+        tiny.append(val.strip())
+    lines = file1.readlines()
+    #print("# of lines: ", len(lines))
+    label_map = {}
+    i=0
+    for line in lines:
+        abc = line.strip().split('\t')
+        if abc[0] in tiny: 
+            label_map[abc[0]] = abc[1]
+    return label_map        
+    
+    
 def load_data():
 	input_image = []
+	file_label_map = load_labels()
+	labels = []    
 	i = 0
-	for filename in glob.iglob('../data/tiny-imagenet-200/train/**/*.JPEG',recursive=True):
+	for filename in glob.iglob('~/tiny-imagenet-200/train/**/*.JPEG',recursive=True):
+		#print("file_name", filename)
+		file_name = filename.split("/")[-1].split("_")[0]
+		labels.append(file_label_map[file_name])       
 		img = mpimg.imread(filename)
 		if(img.shape == (64,64,3)):
 			input_image.append(list(mpimg.imread(filename)))
@@ -50,7 +72,10 @@ def load_data():
 	X_test = gray_data[rand_indices[lenn:]]
 	Y_train = input_image[rand_indices[0:lenn]]
 	Y_test = input_image[rand_indices[lenn:]]
-	return X_train, X_test, Y_train, Y_test
+	labels_train = labels[0:lenn] 
+	labels_test = labels[lenn:]    
+	print("Shape of X_train, X_test, Y_train, Y_test:", len(labels_train), len(labels_test))
+	return X_train, X_test, Y_train, Y_test, labels_train, labels_test
 
 def augment_image(image):
 	image = tf.image.random_flip_left_right(img)
