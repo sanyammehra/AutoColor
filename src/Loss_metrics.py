@@ -16,21 +16,26 @@ def AUC(img1, img2):
 
 def NN_ab(y,n=5):
     # y is [N, H, W, 3]
-    NN_ab_x = np.round(y[:,:,:,1]*20)/20
-    NN_ab_y = np.round(y[:,:,:,2]*20)/20
+    NN_ab_x = np.round(y[:,:,:,1]*20) + 10
+    NN_ab_y = np.round(y[:,:,:,2]*20) + 10
     NN_ab = NN_ab_x*20+NN_ab_y
-    return NN_ab
+
+    return NN_ab.astype(int)
 
 def assign_prob(NN, y):
     # NN is [N, H, W, 1]
     # y is [N, H, W, 3]
     prob_dist = np.zeros((y.shape[0], y.shape[1], y.shape[2], 400))
-    prob_dist[NN] = 1
+    #print (NN.shape)
+    #NN =NN[...,np.newaxis]
+    #prob_dist[NN] = 1
+    #above line doesnt work so to just test code did this
+    prob_dist[...,45] = 1
     return prob_dist
 
 def Prob_dist(y):
     # Returns ab prob distribution for given training batch
-    # y is [N, H, W] dim
+    # y is [N, H, W,3] dim
     # x is [N, H, W, 400] dim
     NN = NN_ab(y)
     p = assign_prob(NN, y)
