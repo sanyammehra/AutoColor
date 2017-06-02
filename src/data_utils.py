@@ -26,9 +26,9 @@ def rgb2gray(rgb):
 def rgb2gray(rgb):
     a = np.dot(rgb[...,:3], [0.299, 0.587, 0.114])
     return a[:,:,:,np.newaxis]
-def load_labels(file_name='~/tiny-imagenet-200/words.txt', label_map={}):
+def load_labels(file_name='../data/tiny-imagenet-200/words.txt', label_map={}):
     file1 = open(file_name)
-    file2 = open('~/tiny-imagenet-200/wnids.txt')
+    file2 = open('../data/tiny-imagenet-200/wnids.txt')
     subset = file2.readlines()
     tiny = []
     for val in subset:
@@ -49,7 +49,7 @@ def load_data():
 	file_label_map = load_labels()
 	labels = []    
 	i = 0
-	for filename in glob.iglob('~/tiny-imagenet-200/train/**/*.JPEG',recursive=True):
+	for filename in glob.iglob('../data/tiny-imagenet-200/train/**/*.JPEG',recursive=True):
 		#print("file_name", filename)
 		file_name = filename.split("/")[-1].split("_")[0]
 		labels.append(file_label_map[file_name])       
