@@ -300,10 +300,11 @@ def complex_pokemon_model3(X,train=True):
   conv16 = lrelu(slim.convolution(conv15, 16, 1, stride=1, scope='conv16', normalizer_fn=slim.batch_norm,normalizer_params = {'is_training':train}, activation_fn=tf.identity))
   conv17 = lrelu(slim.convolution(conv16, 8, 1, stride=1, scope='conv17', normalizer_fn=slim.batch_norm,normalizer_params = {'is_training':train}, activation_fn=tf.identity))
   #if train: conv17 = tf.nn.dropout(conv17, 0.8)
-  conv18 = (slim.convolution(conv17, 400, 1, stride=1, scope='conv18', activation_fn=tf.identity))
+  conv18 = (slim.convolution(conv17, 400, 1, stride=1, scope='conv18', activation_fn=tf.tanh))
   #if train: conv18 = tf.nn.dropout(conv18, 0.8)
 
- # a3 = tf.concat((YY,conv18),axis = 3)
+
+  #YUV_out = tf.concat((YY,conv18),axis = 3)
     #a2 = tf.image.hsv_to_rgb(a3)
  # a3 = tf.reshape(a3,[-1,3])
   #YUV_out = a3;
@@ -314,7 +315,7 @@ def complex_pokemon_model3(X,train=True):
   #a2 = tf.image.hsv_to_rgb(a3)
 
    # UV_out , RGB_out, UV_in, Y_in
-  return conv18
+  return conv18,YY
    
   
 
