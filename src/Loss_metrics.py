@@ -26,10 +26,7 @@ def assign_prob(NN, y):
     # y is [N, H, W, 3]
     prob_dist = np.zeros((y.shape[0]*y.shape[1]*y.shape[2], 400))
     NN = np.reshape(NN, [NN.size,])
-    #NN =NN[...,np.newaxis]
     prob_dist[range(y.shape[0]*y.shape[1]*y.shape[2]),NN] = 1
-    #above line doesnt work so to just test code did this
-    #prob_dist[...,45] = 1
     return np.reshape(prob_dist,[y.shape[0], y.shape[1], y.shape[2], 400])
 
 def Prob_dist(y):
