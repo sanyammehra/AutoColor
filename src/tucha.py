@@ -206,17 +206,9 @@ def complex_pokemon_model(gray_image,train=True):
 
 
 def complex_pokemon_model2(X,train=True):
-
-  #Y = tf.image.convert_image_dtype(X,tf.float32)
-  #inputt = tf.image.rgb_to_hsv(Y)
-  #inpp = inputt[:,:,:,0:2]
-  #inp = inputt[:,:,:,2:3]
     
     
   Y = tf.image.convert_image_dtype(X,tf.float32)
-    #inputt = tf.image.rgb_to_hsv(Y)
-    #inpp = inputt[:,:,:,0:2]
-    #inp = inputt[:,:,:,2:3]
 
   conv_mat = tf.constant(np.array([[0.299,0.587,0.114],[-0.14713,-0.2888,0.436],[0.615,-0.514999,-0.10001]]),dtype = tf.float32)
   inv_conv_mat = tf.constant(np.array([[1,0,1.13983],[1,-0.39465,-0.58060],[1,2.03211,0]]),dtype = tf.float32)
@@ -224,8 +216,8 @@ def complex_pokemon_model2(X,train=True):
   Y = tf.reshape(Y,[-1,3])
 
   inputt = tf.matmul(Y,conv_mat)
-  inputt = tf.reshape(inputt,[-1,64,64,3])
-  Y = tf.reshape(Y,[-1,64,64,3])
+  inputt = tf.reshape(inputt,[-1,32,32,3])
+  Y = tf.reshape(Y,[-1,32,32,3])
   inpp = inputt[:,:,:,1:3]
   inp = inputt[:,:,:,0:1]
 
@@ -251,12 +243,9 @@ def complex_pokemon_model2(X,train=True):
   #if train: conv18 = tf.nn.dropout(conv18, 0.8)
 
   a3 = tf.concat((inp,conv18),axis = 3)
-    #a2 = tf.image.hsv_to_rgb(a3)
   a3 = tf.reshape(a3,[-1,3])
   a2 = tf.matmul(a3,inv_conv_mat)
-  a2 = tf.reshape(a2,[-1,64,64,3])
-  #a3 = tf.concat((conv18,inp),axis = 3)
-  #a2 = tf.image.hsv_to_rgb(a3)
+  a2 = tf.reshape(a2,[-1,32,32,3])
 
     
   return conv18,a2,inpp,Y
