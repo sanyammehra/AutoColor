@@ -268,8 +268,8 @@ def complex_pokemon_model2(X,train=True):
 def complex_pokemon_model3(X,train=True):
 
     
-  X_input = tf.image.convert_image_dtype(X,tf.float32)
-
+  #X_input = tf.image.convert_image_dtype(X,tf.float32)
+  X_input = X
 
   conv_mat = tf.constant(np.array([[0.299,0.587,0.114],[-0.14713,-0.2888,0.436],[0.615,-0.514999,-0.10001]]),dtype = tf.float32)
   inv_conv_mat = tf.constant(np.array([[1,0,1.13983],[1,-0.39465,-0.58060],[1,2.03211,0]]),dtype = tf.float32)
@@ -277,8 +277,8 @@ def complex_pokemon_model3(X,train=True):
   X_input = tf.reshape(X_input,[-1,3])
 
   YUV = tf.matmul(X_input,conv_mat)
-  YUV = tf.reshape(YUV,[-1,64,64,3])
-  X_input = tf.reshape(X_input,[-1,64,64,3])
+  YUV = tf.reshape(YUV,[-1,32,32,3])
+  X_input = tf.reshape(X_input,[-1,32,32,3])
   UV = YUV[:,:,:,1:3]
   YY = YUV[:,:,:,0:1]
 
@@ -315,10 +315,61 @@ def complex_pokemon_model3(X,train=True):
   #a2 = tf.image.hsv_to_rgb(a3)
 
    # UV_out , RGB_out, UV_in, Y_in
-  return conv18,YY
+  return conv18,YY, UV
    
   
+def complex_pokemon_model4(X,train=True):
 
+    
+  #X_input = tf.image.convert_image_dtype(X,tf.float32)
+  X_input = X
+
+  conv_mat = tf.constant(np.array([[0.299,0.587,0.114],[-0.14713,-0.2888,0.436],[0.615,-0.514999,-0.10001]]),dtype = tf.float32)
+  inv_conv_mat = tf.constant(np.array([[1,0,1.13983],[1,-0.39465,-0.58060],[1,2.03211,0]]),dtype = tf.float32)
+
+  X_input = tf.reshape(X_input,[-1,3])
+
+  YUV = tf.matmul(X_input,conv_mat)
+  YUV = tf.reshape(YUV,[-1,32,32,3])
+  X_input = tf.reshape(X_input,[-1,32,32,3])
+  UV = YUV[:,:,:,1:3]
+  YY = YUV[:,:,:,0:1]
+
+  conv1 = lrelu(slim.convolution(YY, 32, 3, stride=1, scope='conv1', normalizer_fn=slim.batch_norm, normalizer_params = {'is_training':train},activation_fn=tf.identity))
+  conv2 = lrelu(slim.convolution(conv1, 32, 3, stride=1, scope='conv2', normalizer_fn=slim.batch_norm,normalizer_params = {'is_training':train}, activation_fn=tf.identity))
+  conv3 = lrelu(slim.convolution(conv2, 64, 3, stride=1, scope='conv3', normalizer_fn=slim.batch_norm,normalizer_params = {'is_training':train}, activation_fn=tf.identity))
+  conv4 = lrelu(slim.convolution(conv3, 64, 3, stride=1, scope='conv4', normalizer_fn=slim.batch_norm,normalizer_params = {'is_training':train}, activation_fn=tf.identity))
+  conv5 = lrelu(slim.convolution(conv4, 128, 3, stride=1, scope='conv5', normalizer_fn=slim.batch_norm,normalizer_params = {'is_training':train}, activation_fn=tf.identity))
+  conv6 = lrelu(slim.convolution(conv5, 128, 3, stride=1, scope='conv6', normalizer_fn=slim.batch_norm,normalizer_params = {'is_training':train}, activation_fn=tf.identity))
+  conv7 = lrelu(slim.convolution(conv6, 256, 3, stride=1, scope='conv7', normalizer_fn=slim.batch_norm,normalizer_params = {'is_training':train}, activation_fn=tf.identity))
+  conv8 = lrelu(slim.convolution(conv7, 256, 3, stride=1, scope='conv8', normalizer_fn=slim.batch_norm,normalizer_params = {'is_training':train}, activation_fn=tf.identity))
+  conv9 = lrelu(slim.convolution(conv8, 128, 3, stride=1, scope='conv9', normalizer_fn=slim.batch_norm,normalizer_params = {'is_training':train}, activation_fn=tf.identity))
+  conv10 = lrelu(slim.convolution(conv9, 128, 3, stride=1, scope='conv10', normalizer_fn=slim.batch_norm,normalizer_params = {'is_training':train}, activation_fn=tf.identity))
+  conv11 = lrelu(slim.convolution(conv10, 64, 1, stride=1, scope='conv11', normalizer_fn=slim.batch_norm, activation_fn=tf.identity))
+  conv12 = lrelu(slim.convolution(conv11, 64, 1, stride=1, scope='conv12', normalizer_fn=slim.batch_norm,normalizer_params = {'is_training':train}, activation_fn=tf.identity))
+  conv13 = lrelu(slim.convolution(conv12, 32, 1, stride=1, scope='conv13', normalizer_fn=slim.batch_norm,normalizer_params = {'is_training':train}, activation_fn=tf.identity))
+  conv14 = lrelu(slim.convolution(conv13, 32, 1, stride=1, scope='conv14', normalizer_fn=slim.batch_norm,normalizer_params = {'is_training':train}, activation_fn=tf.identity))
+  conv15 = lrelu(slim.convolution(conv14, 16, 1, stride=1, scope='conv15', normalizer_fn=slim.batch_norm,normalizer_params = {'is_training':train}, activation_fn=tf.identity))
+  conv16 = lrelu(slim.convolution(conv15, 16, 1, stride=1, scope='conv16', normalizer_fn=slim.batch_norm,normalizer_params = {'is_training':train}, activation_fn=tf.identity))
+  conv17 = lrelu(slim.convolution(conv16, 8, 1, stride=1, scope='conv17', normalizer_fn=slim.batch_norm,normalizer_params = {'is_training':train}, activation_fn=tf.identity))
+  #if train: conv17 = tf.nn.dropout(conv17, 0.8)
+  conv18_a = (slim.convolution(conv17, 256, 1, stride=1, scope='conv18_a', activation_fn=tf.tanh))
+  conv18_b = (slim.convolution(conv17, 256, 1, stride=1, scope='conv18_b', activation_fn=tf.tanh))
+  #if train: conv18 = tf.nn.dropout(conv18, 0.8)
+
+
+  #YUV_out = tf.concat((YY,conv18),axis = 3)
+    #a2 = tf.image.hsv_to_rgb(a3)
+ # a3 = tf.reshape(a3,[-1,3])
+  #YUV_out = a3;
+  #a2 = tf.matmul(a3,inv_conv_mat)
+  #a2 = tf.reshape(a2,[-1,64,64,3])
+  #RGB_out = a2;
+  #a3 = tf.concat((conv18,inp),axis = 3)
+  #a2 = tf.image.hsv_to_rgb(a3)
+
+   # UV_out , RGB_out, UV_in, Y_in
+  return conv18_a,conv18_b,YY, UV
 
 
 
