@@ -44,18 +44,17 @@ def assign_prob(NN, y):
     # y is [N, H, W, 3]
     prob_dist = np.zeros((y.shape[0]*y.shape[1]*y.shape[2], 400))
     NN = np.reshape(NN, [NN.size,])
-    #prob_dist[range(y.shape[0]*y.shape[1]*y.shape[2]),NN] = 1
+    prob_dist[range(y.shape[0]*y.shape[1]*y.shape[2]),NN] = 1
     
-    prob_dist[range(y.shape[0]*y.shape[1]*y.shape[2]),NN] = 0.12
-    prob_dist[range(NN[NN<399].size),NN[NN<399]+1] = 0.11
-    prob_dist[range(NN[NN>0].size),NN[NN>0]+1] = 0.11
-    prob_dist[range(NN[NN<380].size),NN[NN<380]+1] = 0.11
-    prob_dist[range(NN[NN>20].size),NN[NN>20]+1] = 0.11
-    prob_dist[range(NN[NN<379].size),NN[NN<379]+1] = 0.11
-    prob_dist[range(NN[NN>21].size),NN[NN>21]+1] = 0.11
-    prob_dist[range(NN[NN<381].size),NN[NN<381]+1] = 0.11
-    prob_dist[range(NN[NN>19].size),NN[NN>19]+1] = 0.11
-    
+    #prob_dist[range(y.shape[0]*y.shape[1]*y.shape[2]),NN] = 0.12
+    #prob_dist[range(NN[NN<399].size),NN[NN<399]+1] = 0.11
+    #prob_dist[range(NN[NN>0].size),NN[NN>0]+1] = 0.11
+    #prob_dist[range(NN[NN<380].size),NN[NN<380]+1] = 0.11
+    #prob_dist[range(NN[NN>20].size),NN[NN>20]+1] = 0.11
+    #prob_dist[range(NN[NN<379].size),NN[NN<379]+1] = 0.11
+    #prob_dist[range(NN[NN>21].size),NN[NN>21]+1] = 0.11
+    #prob_dist[range(NN[NN<381].size),NN[NN<381]+1] = 0.11
+    #prob_dist[range(NN[NN>19].size),NN[NN>19]+1] = 0.11    
     return np.reshape(prob_dist,[y.shape[0], y.shape[1], y.shape[2], 400])
 
 def Prob_dist1(y):
@@ -72,7 +71,14 @@ def Prob_dist(y):
     NN = NN_ab(y)
     p = assign_prob(NN, y)
     return p
-    
+
+def assign_bin(y):
+    # Returns the ab bin value for a given training batch
+    # y is [N, H, W, 3] dim
+    # NN is [N, H, W] dim
+    NN = NN_ab(y)
+    return NN
+
 def YUV2rgb(UV, y):
     # UV is (N, H, W, 400)
     # returns RGB values corresponding to this YUV input
