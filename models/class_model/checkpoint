@@ -1,2 +1,2 @@
-model_checkpoint_path: "mod2"
-all_model_checkpoint_paths: "mod2"
+model_checkpoint_path: "mod"
+all_model_checkpoint_paths: "mod"

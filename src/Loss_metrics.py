@@ -99,9 +99,9 @@ def YUV2rgb(UV, y):
     # Code for taking mode
     for i in range(20):
         for j in range(20):
-              UV_a += (-0.6+i*1.2/19)*np.exp(np.log(UV_t[:,:,:,i*20+j])/0.38)
-              UV_b += (-0.6+j*1.2/19)*np.exp(np.log(UV_t[:,:,:,i*20+j])/0.38)
-              norm_a += np.exp(np.log(UV_t[:,:,:,i*20+j])/0.38)
+              UV_a += (-0.6+i*1.2/19)*np.exp(np.log(UV_t[:,:,:,i*20+j])/0.32)
+              UV_b += (-0.6+j*1.2/19)*np.exp(np.log(UV_t[:,:,:,i*20+j])/0.32)
+              norm_a += np.exp(np.log(UV_t[:,:,:,i*20+j])/0.32)
     UV_a = UV_a/norm_a
     UV_b = UV_b/norm_a
     #UV_arg_row_number = UV_arg_max//20
